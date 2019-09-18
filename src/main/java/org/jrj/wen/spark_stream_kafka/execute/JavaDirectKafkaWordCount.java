@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
@@ -35,12 +35,12 @@ import scala.Tuple2;
  */
 
 public class JavaDirectKafkaWordCount {
-	private static Logger logger = Logger.getLogger(JavaDirectKafkaWordCount.class);
+//	private static Logger logger = Logger.getLogger(JavaDirectKafkaWordCount.class);
 	private static final Pattern SPACE = Pattern.compile(" ");
 
 	public static void main(String[] args) {
 
-		logger.info("JavaDirectKafkaWordCount start...");
+//		logger.info("JavaDirectKafkaWordCount start...");
 		String brokers = "hadoop-1:9092,hadoop-2:9092,hadoop-3:9092,hadoop-4:9092";
 		String groupId = "spark_stream_kafka";
 		String topics = "spark_stream_kafka";
@@ -75,6 +75,6 @@ public class JavaDirectKafkaWordCount {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		logger.info("JavaDirectKafkaWordCount end...");
+//		logger.info("JavaDirectKafkaWordCount end...");
 	}
 }
