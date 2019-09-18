@@ -1,5 +1,7 @@
 package org.jrj.wen.spark_stream_kafka.execute;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,10 +9,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
+import org.apache.spark.SparkContext;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
@@ -33,18 +39,30 @@ import scala.Tuple2;
  */
 
 public class JavaDirectKafkaWordCount {
-//	private static Logger logger = Logger.getLogger(JavaDirectKafkaWordCount.class);
+	private static Logger logger = Logger.getLogger(JavaDirectKafkaWordCount.class);
 	private static final Pattern SPACE = Pattern.compile(" ");
 
 	public static void aa() {
 
-//		logger.info("JavaDirectKafkaWordCount start...");
+		logger.info("JavaDirectKafkaWordCount start...");
 		String brokers = "hadoop-1:9092,hadoop-2:9092,hadoop-3:9092,hadoop-4:9092";
 		String groupId = "spark_stream_kafka";
 		String topics = "spark_stream_kafka";
 
 		// Create context with a 2 seconds batch interval
 		SparkConf sparkConf = new SparkConf().setAppName("JavaDirectKafkaWordCount");
+		SparkContext sc = new SparkContext(sparkConf);
+		try {
+			FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
+			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
+			fs.deleteOnExit(p);
+			fs.copyFromLocalFile(false,
+					new Path("/usr/local/wen/spark_stream_kafka/target/spark_stream_kafka-0.0.1-SNAPSHOT.jar"), p);
+			logger.info("上传jar成功");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(2));
 
 		Set<String> topicsSet = new HashSet<>(Arrays.asList(topics.split(",")));
@@ -73,6 +91,6 @@ public class JavaDirectKafkaWordCount {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		logger.info("JavaDirectKafkaWordCount end...");
+		logger.info("JavaDirectKafkaWordCount end...");
 	}
 }
