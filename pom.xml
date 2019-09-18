@@ -47,9 +47,9 @@
 	</dependencies>
 
 	<build>
-		<!-- <plugins> <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId> 
-			</plugin> </plugins> -->
-		<plugins>
+		<plugins> <plugin> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-maven-plugin</artifactId> 
+			</plugin> </plugins>
+		<!-- <plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -97,6 +97,6 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+		</plugins> -->
 	</build>
 </project>
