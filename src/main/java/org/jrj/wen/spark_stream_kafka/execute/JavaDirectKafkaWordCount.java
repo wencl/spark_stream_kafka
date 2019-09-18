@@ -57,7 +57,7 @@ public class JavaDirectKafkaWordCount {
 			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
 			fs.deleteOnExit(p);
 			fs.copyFromLocalFile(false,
-					new Path("/usr/local/wen/spark_stream_kafka/target/spark_stream_kafka-0.0.1-SNAPSHOT.jar"), p);
+					new Path("/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"), p);
 			logger.info("上传jar成功");
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
