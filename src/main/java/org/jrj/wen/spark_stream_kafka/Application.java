@@ -1,6 +1,7 @@
 package org.jrj.wen.spark_stream_kafka;
 
 import org.apache.log4j.Logger;
+import org.jrj.wen.spark_stream_kafka.execute.JavaDirectKafkaWordCount;
 import org.springframework.boot.Banner;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -31,7 +32,7 @@ public class Application implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		// TODO Auto-generated method stub
 		logger.info("Application JavaDirectKafkaWordCount start !");
-		
+		JavaDirectKafkaWordCount.aa();
 	}
 
 }

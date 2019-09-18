@@ -27,7 +27,6 @@ public class KafkaProducerScheduler {
 				kafkaTemplate.send("spark_stream_kafka", "1d32 d32d ds12d d32321d d32dd d32d d32d23 d32d");
 			}
 		}, 0, 100, TimeUnit.MILLISECONDS);
-		logger.info("Application JavaDirectKafkaWordCount start !");
-//		JavaDirectKafkaWordCount.aa();
+		
 	}
 }

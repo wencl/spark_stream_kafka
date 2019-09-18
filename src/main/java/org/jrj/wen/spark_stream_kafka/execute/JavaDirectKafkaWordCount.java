@@ -36,7 +36,7 @@ public class JavaDirectKafkaWordCount {
 //	private static Logger logger = Logger.getLogger(JavaDirectKafkaWordCount.class);
 	private static final Pattern SPACE = Pattern.compile(" ");
 
-	public static void main(String[] args) {
+	public static void aa() {
 
 //		logger.info("JavaDirectKafkaWordCount start...");
 		String brokers = "hadoop-1:9092,hadoop-2:9092,hadoop-3:9092,hadoop-4:9092";
