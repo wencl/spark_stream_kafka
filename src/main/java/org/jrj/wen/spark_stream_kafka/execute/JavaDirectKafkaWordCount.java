@@ -87,14 +87,14 @@ public class JavaDirectKafkaWordCount {
 		JavaDStream<String> words = lines.flatMap(x -> Arrays.asList(SPACE.split(x)).iterator());
 		JavaPairDStream<String, Integer> wordCounts = words.mapToPair(s -> new Tuple2<>(s, 1))
 				.reduceByKey((i1, i2) -> i1 + i2);
-		wordCounts.print();
+		// wordCounts.print();
 
 		// （窗口长度）window length – 窗口覆盖的时间长度（上图中为3）
 		// （滑动距离）sliding interval – 窗口启动的时间间隔（上图中为2）
 		// 注意，这两个参数都必须是 DStream 批次间隔（上图中为1）的整数倍.
 		JavaPairDStream<String, Integer> windowedWordCounts = words.mapToPair(s -> new Tuple2<>(s, 1))
 				.reduceByKeyAndWindow((i1, i2) -> i1 + i2, Durations.seconds(10), Durations.seconds(6));
-		windowedWordCounts.print();
+		// windowedWordCounts.print();
 
 		SparkSession ss = SparkSession.builder().appName("wordCountSparkSql").config(sparkConf).getOrCreate();
 		Encoder<String> stringEncoder = Encoders.STRING();
@@ -103,14 +103,15 @@ public class JavaDirectKafkaWordCount {
 		JavaPairRDD<String, Integer> jr = primitiveDS.javaRDD()
 				.mapToPair((PairFunction<String, String, Integer>) str -> {
 					String[] arr = str.split(":");
-					return new Tuple2(arr[0], Integer.valueOf(arr[1]));
+					return new Tuple2<>(arr[0], Integer.valueOf(arr[1]));
 				});
 		// JavaPairDStream<String, Integer> windowedStream =
 		// wordCounts.window(Durations.seconds(20));
-		JavaPairDStream<String,Integer> joinedStream = windowedWordCounts.transformToPair(
-				rdd -> rdd.join(jr))
-				.mapToPair((PairFunction<Tuple2<String, Tuple2<Integer, Integer>>, String, Integer>)p->new Tuple2(p._1(),p._2()._1()+p._2()._2()));
-		
+		JavaPairDStream<String, Integer> joinedStream = windowedWordCounts.transformToPair(rdd -> rdd.join(jr))
+				.mapToPair(
+						(PairFunction<Tuple2<String, Tuple2<Integer, Integer>>, String, Integer>) p -> new Tuple2<String, Integer>(
+								p._1(), p._2()._1() + p._2()._2()));
+
 		// Start the computation
 
 		joinedStream.print();
