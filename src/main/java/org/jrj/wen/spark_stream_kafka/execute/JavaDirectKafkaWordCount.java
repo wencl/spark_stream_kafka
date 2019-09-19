@@ -52,18 +52,18 @@ public class JavaDirectKafkaWordCount {
 		SparkConf sparkConf = new SparkConf().setAppName("JavaDirectKafkaWordCount");
 		SparkContext sc = new SparkContext(sparkConf);
 
-		try {
-			FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
-			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
-			fs.deleteOnExit(p);
-			fs.copyFromLocalFile(false,
-					new Path("/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"),
-					p);
-			logger.info("上传jar成功");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//		try {
+//			FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
+//			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
+//			fs.deleteOnExit(p);
+//			fs.copyFromLocalFile(false,
+//					new Path("/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"),
+//					p);
+//			logger.info("上传jar成功");
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 
 		JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(2));
 
