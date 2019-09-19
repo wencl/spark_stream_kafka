@@ -51,7 +51,7 @@ public class JavaDirectKafkaWordCount {
 		// Create context with a 2 seconds batch interval
 		SparkConf sparkConf = new SparkConf().setAppName("JavaDirectKafkaWordCount");
 		SparkContext sc = new SparkContext(sparkConf);
-		try {
+		/*try {
 			FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
 			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
 			fs.deleteOnExit(p);
@@ -61,7 +61,7 @@ public class JavaDirectKafkaWordCount {
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		}*/
 		JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(2));
 
 		Set<String> topicsSet = new HashSet<>(Arrays.asList(topics.split(",")));
