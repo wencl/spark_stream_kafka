@@ -1,6 +1,5 @@
 package org.jrj.wen.spark_stream_kafka.execute;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,14 +7,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.log4j.Logger;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
+import org.apache.spark.api.java.JavaPairRDD;
+import org.apache.spark.api.java.function.PairFunction;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoder;
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.SparkSession;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaInputDStream;
@@ -52,18 +55,19 @@ public class JavaDirectKafkaWordCount {
 		SparkConf sparkConf = new SparkConf().setAppName("JavaDirectKafkaWordCount");
 		SparkContext sc = new SparkContext(sparkConf);
 
-//		try {
-//			FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
-//			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
-//			fs.deleteOnExit(p);
-//			fs.copyFromLocalFile(false,
-//					new Path("/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"),
-//					p);
-//			logger.info("上传jar成功");
-//		} catch (IOException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
+		// try {
+		// FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
+		// Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
+		// fs.deleteOnExit(p);
+		// fs.copyFromLocalFile(false,
+		// new
+		// Path("/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"),
+		// p);
+		// logger.info("上传jar成功");
+		// } catch (IOException e1) {
+		// // TODO Auto-generated catch block
+		// e1.printStackTrace();
+		// }
 
 		JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(2));
 
@@ -85,11 +89,32 @@ public class JavaDirectKafkaWordCount {
 				.reduceByKey((i1, i2) -> i1 + i2);
 		wordCounts.print();
 
+		// （窗口长度）window length – 窗口覆盖的时间长度（上图中为3）
+		// （滑动距离）sliding interval – 窗口启动的时间间隔（上图中为2）
+		// 注意，这两个参数都必须是 DStream 批次间隔（上图中为1）的整数倍.
 		JavaPairDStream<String, Integer> windowedWordCounts = words.mapToPair(s -> new Tuple2<>(s, 1))
 				.reduceByKeyAndWindow((i1, i2) -> i1 + i2, Durations.seconds(10), Durations.seconds(6));
 		windowedWordCounts.print();
 
+		SparkSession ss = SparkSession.builder().appName("wordCountSparkSql").config(sparkConf).getOrCreate();
+		Encoder<String> stringEncoder = Encoders.STRING();
+		Dataset<String> primitiveDS = ss.createDataset(Arrays.asList("d32321d:100", "1d32:200", "d32d:300"),
+				stringEncoder);
+		JavaPairRDD<String, Integer> jr = primitiveDS.javaRDD()
+				.mapToPair((PairFunction<String, String, Integer>) str -> {
+					String[] arr = str.split(":");
+					return new Tuple2(arr[0], Integer.valueOf(arr[1]));
+				});
+		// JavaPairDStream<String, Integer> windowedStream =
+		// wordCounts.window(Durations.seconds(20));
+		JavaPairDStream<String,Integer> joinedStream = windowedWordCounts.transformToPair(
+				rdd -> rdd.join(jr))
+				.mapToPair((PairFunction<Tuple2<String, Tuple2<Integer, Integer>>, String, Integer>)p->new Tuple2(p._1(),p._2()._1()+p._2()._2()));
+		
 		// Start the computation
+
+		joinedStream.print();
+
 		jssc.start();
 		try {
 			jssc.awaitTermination();
