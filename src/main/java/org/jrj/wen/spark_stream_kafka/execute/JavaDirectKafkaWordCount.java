@@ -51,17 +51,15 @@ public class JavaDirectKafkaWordCount {
 		// Create context with a 2 seconds batch interval
 		SparkConf sparkConf = new SparkConf().setAppName("JavaDirectKafkaWordCount");
 		SparkContext sc = new SparkContext(sparkConf);
-		/*try {
-			FileSystem fs = FileSystem.newInstance(sc.hadoopConfiguration());
-			Path p = new Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
-			fs.deleteOnExit(p);
-			fs.copyFromLocalFile(false,
-					new Path("/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"), p);
-			logger.info("上传jar成功");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}*/
+		/*
+		 * try { FileSystem fs =
+		 * FileSystem.newInstance(sc.hadoopConfiguration()); Path p = new
+		 * Path("/spark/spark_stream_kafka-0.0.1-SNAPSHOT.jar");
+		 * fs.deleteOnExit(p); fs.copyFromLocalFile(false, new Path(
+		 * "/usr/local/wen/spark_stream_kafka/target/original-spark_stream_kafka-0.0.1-SNAPSHOT.jar"
+		 * ), p); logger.info("上传jar成功"); } catch (IOException e1) { // TODO
+		 * Auto-generated catch block e1.printStackTrace(); }
+		 */
 		JavaStreamingContext jssc = new JavaStreamingContext(sparkConf, Durations.seconds(2));
 
 		Set<String> topicsSet = new HashSet<>(Arrays.asList(topics.split(",")));
@@ -82,6 +80,10 @@ public class JavaDirectKafkaWordCount {
 				.reduceByKey((i1, i2) -> i1 + i2);
 		wordCounts.print();
 
+		JavaPairDStream<String, Integer> windowedWordCounts = words.mapToPair(s -> new Tuple2<>(s, 1))
+				.reduceByKeyAndWindow((i1, i2) -> i1 + i2, Durations.seconds(10), Durations.seconds(5));
+		windowedWordCounts.print();
+		
 		// Start the computation
 		jssc.start();
 		try {
