@@ -3,9 +3,6 @@ package org.jrj.wen.spark_stream_kafka.compoment;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-import org.jrj.wen.spark_stream_kafka.Application;
-import org.jrj.wen.spark_stream_kafka.execute.JavaDirectKafkaWordCount;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class KafkaProducerScheduler {
-	private static Logger logger = Logger.getLogger(KafkaProducerScheduler.class);
+	
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
 
