@@ -86,7 +86,7 @@ public class JavaDirectKafkaWordCount {
 		wordCounts.print();
 
 		JavaPairDStream<String, Integer> windowedWordCounts = words.mapToPair(s -> new Tuple2<>(s, 1))
-				.reduceByKeyAndWindow((i1, i2) -> i1 + i2, Durations.seconds(10), Durations.seconds(5));
+				.reduceByKeyAndWindow((i1, i2) -> i1 + i2, Durations.seconds(10), Durations.seconds(6));
 		windowedWordCounts.print();
 
 		// Start the computation
